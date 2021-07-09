@@ -1,74 +1,29 @@
 package voteserver
 
 import (
-	"github.com/adilku/vote_server/internal/app/store"
-	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
-	"io"
+	"database/sql"
+	"github.com/adilku/vote_server/internal/app/store/sqlstore"
 	"net/http"
 )
 
-// voteserver ..
-type VoteServer struct {
-	config *Config
-	logger *logrus.Logger
-	router *mux.Router
-	store  *store.Store
-}
-
-// New ...
-func New(config *Config) *VoteServer {
-	return &VoteServer{
-		config: config,
-		logger: logrus.New(),
-		router: mux.NewRouter(),
-	}
-}
-
-// Start..
-func (s *VoteServer) Start() error {
-
-	if err := s.configureLogger(); err != nil {
-		return err
-	}
-
-	s.configureRouter()
-
-	if err := s.configureStore(); err != nil {
-		return err
-	}
-
-	s.logger.Info("starting server")
-
-	return http.ListenAndServe(s.config.BindAddr, s.router)
-}
-
-func (s *VoteServer) configureLogger() error {
-	level, err := logrus.ParseLevel(s.config.LogLevel)
+func Start(config *Config) error {
+	db, err := newDB(config.DatabaseURL)
 	if err != nil {
-		return err
+		return nil
 	}
-	s.logger.SetLevel(level)
-	return nil
+	defer db.Close()
+	store := sqlstore.New(db)
+	s := newServer(store)
+	return http.ListenAndServe(config.BindAddr, s)
 }
 
-func (s *VoteServer) configureRouter() {
-	s.router.HandleFunc("/hello", s.handleHello())
-}
-
-func (s *VoteServer) configureStore() error {
-
-	st := store.New(s.config.Store)
-	if err := st.Open(); err != nil {
-		return err
+func newDB(dabaseURL string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dabaseURL)
+	if err != nil {
+		return nil, err
 	}
-
-	s.store = st
-	return nil
-}
-
-func (s *VoteServer) handleHello() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "hello")
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
+	return db, nil
 }

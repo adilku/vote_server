@@ -26,8 +26,7 @@ func main()  {
 		log.Fatal(err)
 	}
 
-	s := voteserver.New(config)
-	if err := s.Start(); err != nil {
+	if err := voteserver.Start(config); err != nil {
 		log.Fatal(err)
 	}
 
