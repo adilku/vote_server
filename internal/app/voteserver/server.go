@@ -36,6 +36,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/poll", s.handlePoll()).Methods("POST")
 }
 
+
 func (s *server) handlePollCreate() http.HandlerFunc {
 	type request struct {
 		Fields []string `json:"fields"`
