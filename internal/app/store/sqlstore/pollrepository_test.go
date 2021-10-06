@@ -9,24 +9,24 @@ import (
 
 func TestPollRepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
-	defer teardown("polls")
+	defer teardown("wallets")
 
 	s := sqlstore.New(db)
-	u := model.TestPoll(t)
-	assert.NoError(t, s.GetPoll().Create(u))
+	u := model.TestWallet(t)
+	assert.NoError(t, s.GetWallet().Create(u))
 	assert.NotNil(t, u)
 }
 
-func TestPollRepository_FindById(t *testing.T) {
+func TestPollRepository_FindByName(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
-	defer teardown("polls")
+	defer teardown("wallets")
 	s := sqlstore.New(db)
-	u1 := model.TestPoll(t)
-	_, err := s.GetPoll().FindById(u1.ID)
+	u1 := model.TestWallet(t)
+	_, err := s.GetWallet().FindByName(u1.Name)
 	assert.Error(t, err)
 
-	s.GetPoll().Create(u1)
-	f, err := s.GetPoll().FindById(u1.ID)
+	s.GetWallet().Create(u1)
+	f, err := s.GetWallet().FindByName(u1.Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, f)
 }

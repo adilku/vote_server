@@ -32,14 +32,14 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/createPoll", s.handlePollCreate()).Methods("POST")
-	s.router.HandleFunc("/poll", s.handlePoll()).Methods("POST")
+	s.router.HandleFunc("/checkBalance", s.handleCheckBalance()).Methods("POST")
+	//s.router.HandleFunc("/poll", s.handlePoll()).Methods("POST")
 }
 
 
-func (s *server) handlePollCreate() http.HandlerFunc {
+func (s *server) handleCheckBalance() http.HandlerFunc {
 	type request struct {
-		Fields []string `json:"fields"`
+		Name string `json:"name"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -47,19 +47,23 @@ func (s *server) handlePollCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
-		//fmt.Println(req.Fields)
-		Fields := model.FillNulls(req.Fields)
-		u := &model.Poll{
-			PollVars: Fields,
+		if _, err := s.store.GetWallet().FindByName(req.Name); err != nil {
+			wallet := model.Wallet{
+				Name: req.Name,
+				Balance: 0,
+				}
+			if err := s.store.GetWallet().Create(&wallet); err != nil {
+				s.error(w, r, http.StatusUnprocessableEntity, err)
+				return
+			}
+			s.respond(w, r, http.StatusCreated, wallet)
+		} else {
+			s.respond(w, r, http.StatusOK, nil)
 		}
-		if err := s.store.GetPoll().Create(u); err != nil {
-			s.error(w, r, http.StatusUnprocessableEntity, err)
-			return
-		}
-		s.respond(w, r, http.StatusCreated, u)
 	}
 }
 
+/*
 func (s *server) handlePoll() http.HandlerFunc {
 	type request struct {
 		PollId int    `json:"poll_id"`
@@ -71,7 +75,7 @@ func (s *server) handlePoll() http.HandlerFunc {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
-		_, err := s.store.GetPoll().FindById(req.PollId)
+		_, err := s.store.GetWallet().FindById(req.PollId)
 		if err != nil {
 			s.error(w, r, http.StatusNoContent, err)
 			return
@@ -80,6 +84,7 @@ func (s *server) handlePoll() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
+*/
 
 func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
 	s.respond(w, r, code, map[string]string{"error": err.Error()})

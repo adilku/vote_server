@@ -9,7 +9,7 @@ import (
 
 type Store struct {
 	db *sql.DB
-	pollRepository *PollRepository
+	pollRepository *WalletRepository
 }
 
 func New (db *sql.DB) *Store {
@@ -19,12 +19,12 @@ func New (db *sql.DB) *Store {
 }
 
 
-func (s *Store) GetPoll() store.PollRepository {
+func (s *Store) GetWallet() store.WalletRepository {
 	if s.pollRepository != nil {
 		return s.pollRepository
 	}
 
-	s.pollRepository = &PollRepository{
+	s.pollRepository = &WalletRepository{
 		store: s,
 	}
 

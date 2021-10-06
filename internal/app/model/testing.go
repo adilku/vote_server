@@ -2,11 +2,10 @@ package model
 
 import "testing"
 
-func TestPoll(t *testing.T) *Poll {
+func TestWallet(t *testing.T) *Wallet {
 	t.Helper()
-	return &Poll{
-		PollVars: []PairPoll{
-			{Name: "1", Cnt: 0},
-		},
+	return &Wallet{
+		Name: "first",
+		Balance: 0,
 	}
 }

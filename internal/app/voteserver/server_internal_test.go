@@ -19,8 +19,8 @@ func TestServer_handlePollCreate(t *testing.T) {
 	}{
 		{
 			name: "valid",
-			payload: map[string][]string{
-				"fields": {"black", "white", "yellow"},
+			payload: map[string]string{
+				"name": "secondUser",
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -35,7 +35,7 @@ func TestServer_handlePollCreate(t *testing.T) {
 			rec := httptest.NewRecorder()
 			b := &bytes.Buffer{}
 			json.NewEncoder(b).Encode(tc.payload)
-			req, _ := http.NewRequest(http.MethodPost, "/createPoll", b)
+			req, _ := http.NewRequest(http.MethodPost, "/checkBalance", b)
 			s.ServeHTTP(rec, req)
 			assert.Equal(t, tc.expectedCode, rec.Code)
 		})
