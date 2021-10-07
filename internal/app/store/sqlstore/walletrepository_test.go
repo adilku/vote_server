@@ -10,7 +10,6 @@ import (
 func TestWalletRepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown("wallets")
-
 	s := sqlstore.New(db)
 	u := model.TestWallet(t)
 	assert.NoError(t, s.GetWallet().Create(u))

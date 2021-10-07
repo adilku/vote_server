@@ -8,6 +8,7 @@ import (
 
 func Start(config *Config) error {
 	db, err := newDB(config.DatabaseURL)
+	
 	if err != nil {
 		return err
 	}
