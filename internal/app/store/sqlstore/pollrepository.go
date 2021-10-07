@@ -8,27 +8,39 @@ type WalletRepository struct {
 	store *Store
 }
 
+func (r *WalletRepository) ChangeBalance(id int, delta int) error {
+	if err := r.store.db.QueryRow(
+		"UPDATE wallets SET cur_balance = cur_balance + $2 WHERE id = $1",
+		id,
+		delta,
+		).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *WalletRepository) Create(u *model.Wallet) error {
 	sqlStatement := `
-	INSERT INTO wallets (user_name, cur_balance)
+	INSERT INTO wallets (id, cur_balance)
 	VALUES ($1, $2)
 	RETURNING id`
 	err := r.store.db.QueryRow(
-		sqlStatement,u.Name, u.Balance,
+		sqlStatement,u.ID, u.Balance,
 	).Scan(&u.ID)
 	return err
 }
 
 
-func (r *WalletRepository) FindByName(name string) (*model.Wallet, error) {
-	u := &model.Wallet{}
+func (r *WalletRepository) FindById(id int) (*model.Wallet, error) {
+	u := &model.Wallet{ID : id}
 	if err := r.store.db.QueryRow(
-		"SELECT id FROM wallets WHERE  user_name = $1",
-		name,
-		).Scan(&u.ID); err != nil {
+		"SELECT cur_balance FROM wallets WHERE  id = $1",
+		id,
+		).Scan(&u.Balance); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
+
 
 

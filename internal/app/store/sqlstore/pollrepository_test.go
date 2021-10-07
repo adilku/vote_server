@@ -17,16 +17,17 @@ func TestPollRepository_Create(t *testing.T) {
 	assert.NotNil(t, u)
 }
 
-func TestPollRepository_FindByName(t *testing.T) {
+func TestPollRepository_FindById(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown("wallets")
 	s := sqlstore.New(db)
 	u1 := model.TestWallet(t)
-	_, err := s.GetWallet().FindByName(u1.Name)
+	_, err := s.GetWallet().FindById(u1.ID)
 	assert.Error(t, err)
 
 	s.GetWallet().Create(u1)
-	f, err := s.GetWallet().FindByName(u1.Name)
+	f, err := s.GetWallet().FindById(u1.ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, f)
 }
+

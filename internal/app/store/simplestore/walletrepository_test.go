@@ -18,11 +18,23 @@ func TestPollRepository_Create(t *testing.T) {
 func TestPollRepository_FindByName(t *testing.T) {
 	s := simplestore.New()
 	u1 := model.TestWallet(t)
-	_, err := s.GetWallet().FindByName(u1.Name)
+	_, err := s.GetWallet().FindById(u1.ID)
 	assert.Error(t, err)
 
 	s.GetWallet().Create(u1)
-	f, err := s.GetWallet().FindByName(u1.Name)
+	f, err := s.GetWallet().FindById(u1.ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, f)
+}
+
+func TestPollRepository_ChangeBalance(t *testing.T)  {
+	s := simplestore.New()
+	u1 := model.TestWallet(t)
+	oldBalance := u1.Balance
+	err := s.GetWallet().ChangeBalance(u1.ID , model.TestCreditBalance(t))
+	assert.NoError(t, err)
+	newGoodBalance := oldBalance + model.TestCreditBalance(t)
+	curWallet, err := s.GetWallet().FindById(u1.ID)
+	assert.NoError(t, err)
+	assert.EqualValues(t, newGoodBalance, curWallet.Balance)
 }

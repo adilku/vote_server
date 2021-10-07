@@ -19,8 +19,8 @@ func TestServer_handlePollCreate(t *testing.T) {
 	}{
 		{
 			name: "valid",
-			payload: map[string]string{
-				"name": "secondUser",
+			payload: map[string]int{
+				"id": 102,
 			},
 			expectedCode: http.StatusCreated,
 		},

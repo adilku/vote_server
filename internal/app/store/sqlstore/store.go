@@ -18,7 +18,6 @@ func New (db *sql.DB) *Store {
 	}
 }
 
-
 func (s *Store) GetWallet() store.WalletRepository {
 	if s.pollRepository != nil {
 		return s.pollRepository

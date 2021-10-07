@@ -39,7 +39,7 @@ func (s *server) configureRouter() {
 
 func (s *server) handleCheckBalance() http.HandlerFunc {
 	type request struct {
-		Name string `json:"name"`
+		Id int `json:"id"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -47,9 +47,9 @@ func (s *server) handleCheckBalance() http.HandlerFunc {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
-		if _, err := s.store.GetWallet().FindByName(req.Name); err != nil {
+		if _, err := s.store.GetWallet().FindById(req.Id); err != nil {
 			wallet := model.Wallet{
-				Name: req.Name,
+				ID: req.Id,
 				Balance: 0,
 				}
 			if err := s.store.GetWallet().Create(&wallet); err != nil {

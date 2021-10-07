@@ -1,7 +1,6 @@
 package simplestore
 
 import (
-	"github.com/adilku/vote_server/internal/app/model"
 	"github.com/adilku/vote_server/internal/app/store"
 )
 
@@ -20,7 +19,7 @@ func (s *Store) GetWallet() store.WalletRepository {
 
 	s.pollRepository = &WalletRepository{
 		store:  s,
-		wallet: map[string]*model.Wallet{},
+		wallet: make(map[int]int, 0),
 	}
 
 	return s.pollRepository

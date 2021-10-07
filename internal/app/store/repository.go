@@ -4,6 +4,7 @@ import "github.com/adilku/vote_server/internal/app/model"
 
 type WalletRepository interface {
 	Create(wallet *model.Wallet) error
-	FindByName(name string) (*model.Wallet, error)
+	FindById(id int) (*model.Wallet, error)
+	ChangeBalance(id int, delta int) (error)
 	//ChangeById(id int, poll *model.Wallet) error
 }
