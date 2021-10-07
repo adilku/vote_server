@@ -15,6 +15,7 @@ curl -v -H 'Content-Type: application/json' -X POST -d '{"id":1}' http://localho
 
 //Зачислить/списать средства
 curl -v -H 'Content-Type: application/json' -X POST -d '{"id":1, "delta":10}' http://localhost:8080/changeBalance
+curl -v -H 'Content-Type: application/json' -X POST -d '{"id":1, "delta":-10}' http://localhost:8080/changeBalance
 
 //Перевести средства
 curl -v -H 'Content-Type: application/json' -X POST -d '{"IdSender":1, "IdReceiver":3, "delta":10}' http://localhost:8080/transfer
