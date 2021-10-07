@@ -14,7 +14,7 @@ func TestWallet2(t *testing.T) *Wallet {
 	t.Helper()
 	return &Wallet{
 		ID: 101,
-		Balance: 0,
+		Balance: 100,
 	}
 }
 

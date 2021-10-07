@@ -45,3 +45,5 @@ func TestWalletRepository_NegativeBalance(t *testing.T)  {
 	err := s.GetWallet().ChangeBalance(u1.ID , model.TestDebitBalance(t))
 	assert.Error(t, err)
 }
+
+

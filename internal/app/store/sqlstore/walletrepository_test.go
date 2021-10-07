@@ -65,4 +65,32 @@ func TestWalletRepository_NegativeBalance(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestWalletRepository_transfer(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+	defer teardown("wallets")
+	s := sqlstore.New(db)
+	u1 := model.TestWallet(t)
+	s.GetWallet().Create(u1)
+	u2 := model.TestWallet2(t)
+	s.GetWallet().Create(u2)
+	err := s.GetWallet().Transfer(u2.ID, u1.ID, model.TestCreditBalance(t))
+	assert.NoError(t, err)
+	balance2, _ := s.GetWallet().FindById(u2.ID)
+	assert.EqualValues(t, u2.Balance - model.TestCreditBalance(t), balance2.Balance)
+}
+
+
+func TestWalletRepository_badtransfer(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+	defer teardown("wallets")
+	s := sqlstore.New(db)
+	u1 := model.TestWallet(t)
+	s.GetWallet().Create(u1)
+	u2 := model.TestWallet2(t)
+	s.GetWallet().Create(u2)
+	err := s.GetWallet().Transfer(u1.ID, u2.ID, model.TestCreditBalance(t))
+	assert.Error(t, err)
+	//balance2, _ := s.GetWallet().FindById(u2.ID)
+	//assert.EqualValues(t, u2.Balance - model.TestCreditBalance(t), balance2.Balance)
+}
 

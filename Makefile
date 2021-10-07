@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	go build -v ./cmd/voteserver
+	go build -v ./cmd/walletserver
 
 
 .PHONY: test

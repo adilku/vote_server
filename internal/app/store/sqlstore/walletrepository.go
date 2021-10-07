@@ -1,11 +1,54 @@
 package sqlstore
 
 import (
+	"errors"
 	"github.com/adilku/vote_server/internal/app/model"
 )
 
 type WalletRepository struct {
 	store *Store
+}
+
+func (r *WalletRepository) Transfer(idSender int, idReceiver int, delta int) error {
+	_, err := r.FindById(idSender)
+	if err != nil {
+		return err
+	}
+	_, err = r.FindById(idReceiver)
+	if err != nil {
+		err := r.Create(&model.Wallet{ID: idReceiver, Balance: 0})
+		if err != nil {
+			return err
+		}
+	}
+	tx, err := r.store.db.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("UPDATE wallets SET cur_balance = cur_balance - $2 WHERE id = $1", idSender, delta)
+	if err != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return err
+		}
+		return errors.New("insufficient funds")
+	}
+
+	_, err = tx.Exec("UPDATE wallets SET cur_balance = cur_balance + $2 WHERE id = $1", idReceiver, delta)
+	if err != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return err
+		}
+		return errors.New("insufficient funds")
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	
+	return nil
 }
 
 func (r *WalletRepository) ChangeBalance(id int, delta int) error {

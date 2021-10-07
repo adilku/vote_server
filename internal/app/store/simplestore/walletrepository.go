@@ -10,6 +10,16 @@ type WalletRepository struct {
 	wallet map[int]int
 }
 
+func (r *WalletRepository) Transfer(idSender int, idReceiver int, delta int) error {
+	if r.wallet[idSender] >= delta {
+		r.wallet[idSender] -= delta
+		r.wallet[idReceiver] += delta
+		return nil
+	} else {
+		return errors.New("Bad transaction")
+	}
+}
+
 func (r *WalletRepository) ChangeBalance(id int, delta int) error {
 	if _, ok := r.wallet[id]; !ok {
 		r.wallet[id] = 0
@@ -36,3 +46,5 @@ func (r *WalletRepository) FindById(id int) (*model.Wallet, error) {
 
 	return &model.Wallet{ID : id, Balance: u}, nil
 }
+
+
