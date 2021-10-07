@@ -33,7 +33,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) configureRouter() {
 	s.router.HandleFunc("/checkBalance", s.handleCheckBalance()).Methods("POST")
-	//s.router.HandleFunc("/poll", s.handlePoll()).Methods("POST")
+	s.router.HandleFunc("/changeBalance", s.handleChangeBalance()).Methods("POST")
 }
 
 
@@ -60,6 +60,25 @@ func (s *server) handleCheckBalance() http.HandlerFunc {
 		} else {
 			s.respond(w, r, http.StatusOK, nil)
 		}
+	}
+}
+
+func (s *server) handleChangeBalance() http.HandlerFunc {
+	type request struct {
+		Id    int `json:"id"`
+		Delta int `json:"delta"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		if err := s.store.GetWallet().ChangeBalance(req.Id, req.Delta); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+		s.respond(w, r, http.StatusOK, nil)
 	}
 }
 

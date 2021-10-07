@@ -20,9 +20,11 @@ func TestWallet2(t *testing.T) *Wallet {
 
 
 func TestCreditBalance(t *testing.T) int {
+	t.Helper()
 	return 2
 }
 
 func TestDebitBalance(t *testing.T) int {
+	t.Helper()
 	return -2
 }

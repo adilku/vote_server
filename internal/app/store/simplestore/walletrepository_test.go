@@ -38,3 +38,10 @@ func TestWalletRepository_ChangeBalance(t *testing.T)  {
 	assert.NoError(t, err)
 	assert.EqualValues(t, newGoodBalance, curWallet.Balance)
 }
+
+func TestWalletRepository_NegativeBalance(t *testing.T)  {
+	s := simplestore.New()
+	u1 := model.TestWallet(t)
+	err := s.GetWallet().ChangeBalance(u1.ID , model.TestDebitBalance(t))
+	assert.Error(t, err)
+}

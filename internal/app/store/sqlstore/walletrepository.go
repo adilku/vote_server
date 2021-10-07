@@ -9,6 +9,13 @@ type WalletRepository struct {
 }
 
 func (r *WalletRepository) ChangeBalance(id int, delta int) error {
+	_, err := r.FindById(id)
+	if err != nil {
+		err := r.Create(&model.Wallet{ID: id, Balance: 0})
+		if err != nil {
+			return err
+		}
+	}
 	if delta > 0 {
 		if err := r.store.db.QueryRow(
 			"UPDATE wallets SET cur_balance = cur_balance + $2 WHERE id = $1",
