@@ -16,7 +16,6 @@ func init() {
 }
 
 func main()  {
-
 	flag.Parse()
 
 	config := walletserver.NewConfig()
